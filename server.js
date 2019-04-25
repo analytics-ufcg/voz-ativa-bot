@@ -5,7 +5,7 @@ const client = require('./client');
 
 const WEBHOOK_TOKEN = randomstring.generate(16);
 
-client.setWebhook(`https://voz-ativa-bot.herokuapp.com/${WEBHOOK_TOKEN}`);
+client.setWebhook(`https://voz-ativa-bot.herokuapp.com`);
 
 const app = express();
 
@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
   res.status(200).send("ok");
 })
 
-app.post(`/${WEBHOOK_TOKEN}`, (req, res, next) => {
+app.post('/', (req, res, next) => {
   console.log(req.body.message);
     client
         .sendMessage(req.body.message.chat.id, 'I\'m a bot, so what?')
