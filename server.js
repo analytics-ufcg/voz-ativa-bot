@@ -19,6 +19,12 @@ bot.launch()
 expressApp.get('/', (req, res) => {
   res.send('Hello World!');
 });
+
+expressApp.post(`/bot${API_TOKEN}`, (req, res) => {
+  console.log(req);
+});
+
+
 expressApp.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
