@@ -16,6 +16,6 @@
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "randomstring": "^1.1.5",
-    "telegram-bot-client": "^2.1.1"
+    "telegraf": "^3.29.0"
   }
 }

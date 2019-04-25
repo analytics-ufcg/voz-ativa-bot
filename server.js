@@ -1,3 +1,24 @@
+const Telegraf = require('telegraf')
+const express = require('express')
+const randomstring = require('randomstring')
+const app = express()
+
+const bot = new Telegraf(process.env.TELEGRAM_TOKEN)
+const webhookToken = randomstring.generate(16)
+
+app.use(bot.webhookCallback('/' + webhookToken))
+bot.telegram.setWebhook(process.env.APP_URL + webhookToken)
+
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+})
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log('Listening on port ' + port)
+})
+
+/*
 const express = require('express');
 const bodyParser = require('body-parser');
 const randomstring = require('randomstring');
@@ -38,3 +59,4 @@ app.use((err, req, res, next) => {
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => console.log(`Servidor rodando na porta ${port}`));
+*/
