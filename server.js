@@ -1,7 +1,10 @@
 const Telegraf = require('telegraf')
 const express = require('express')
+const bodyParser = require("body-parser")
 const randomstring = require('randomstring')
 const app = express()
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN)
 const webhookToken = randomstring.generate(16)
@@ -11,6 +14,10 @@ bot.telegram.setWebhook(process.env.APP_URL + webhookToken)
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
+})
+
+app.post('/' + webhookToken, (req, res) => {
+  console.log(req)
 })
 
 const port = process.env.PORT || 3000;
