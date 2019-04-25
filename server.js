@@ -13,6 +13,11 @@ console.log(webhookToken)
 app.use(bot.webhookCallback('/' + webhookToken))
 bot.telegram.setWebhook(process.env.APP_URL + webhookToken)
 
+bot.start((ctx) => ctx.reply('Welcome'))
+bot.help((ctx) => ctx.reply('Send me a sticker'))
+bot.on('sticker', (ctx) => ctx.reply('👍'))
+bot.hears('hi', (ctx) => ctx.reply('Hey there'))
+
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
