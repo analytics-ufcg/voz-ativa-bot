@@ -1,0 +1,22 @@
+{
+  "name": "voz-ativa-bot",
+  "version": "0.1.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Voz",
+    "Ativa"
+  ],
+  "author": "Analytics UFCG",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "node-telegram-bot-api": "^0.30.0",
+    "randomstring": "^1.1.5",
+    "telegram-bot-client": "^2.1.1"
+  }
+}
