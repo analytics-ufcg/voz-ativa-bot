@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
   res.status(200).send("ok");
 })
 
-app.post(`/${WEBHOOK_TOKEN}/`, (req, res, next) => {
+app.post(`/${WEBHOOK_TOKEN}`, (req, res, next) => {
   console.log(req.body.message);
     client
         .sendMessage(req.body.message.chat.id, 'I\'m a bot, so what?')
