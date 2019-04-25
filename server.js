@@ -1,36 +1,27 @@
-const Telegraf = require('telegraf')
-const express = require('express')
-const bodyParser = require("body-parser")
-const randomstring = require('randomstring')
-const app = express()
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+const Telegraf = require('telegraf');
+const express = require('express');
+const expressApp = express();
 
-const bot = new Telegraf(process.env.TELEGRAM_TOKEN)
-const webhookToken = randomstring.generate(16)
-console.log(webhookToken)
+const API_TOKEN = process.env.TELEGRAM_TOKEN || '';
+const PORT = process.env.PORT || 3000;
+const URL = process.env.APP_URL || 'https://voz-ativa-bot.herokuapp.com';
 
-app.use(bot.webhookCallback('/' + webhookToken))
-bot.telegram.setWebhook(process.env.APP_URL + webhookToken)
+const bot = new Telegraf(API_TOKEN);
+bot.telegram.setWebhook(`${URL}/bot${API_TOKEN}`);
+expressApp.use(bot.webhookCallback(`/bot${API_TOKEN}`));
 
-bot.start((ctx) => ctx.reply('Welcome'))
-bot.help((ctx) => ctx.reply('Send me a sticker'))
-bot.on('sticker', (ctx) => ctx.reply('👍'))
-bot.hears('hi', (ctx) => ctx.reply('Hey there'))
+bot.command('oldschool', (ctx) => ctx.reply('Hello'))
+bot.command('modern', ({ reply }) => reply('Yo'))
+bot.command('hipster', Telegraf.reply('λ'))
 bot.launch()
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
-
-app.post('/' + webhookToken, (req, res) => {
-  console.log(req)
-})
-
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log('Listening on port ' + port)
-})
+// and at the end just start server on PORT
+expressApp.get('/', (req, res) => {
+  res.send('Hello World!');
+});
+expressApp.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
 /*
 const express = require('express');
