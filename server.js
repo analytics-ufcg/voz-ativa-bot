@@ -8,6 +8,7 @@ app.use(bodyParser.json())
 
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN)
 const webhookToken = randomstring.generate(16)
+console.log(webhookToken)
 
 app.use(bot.webhookCallback('/' + webhookToken))
 bot.telegram.setWebhook(process.env.APP_URL + webhookToken)
