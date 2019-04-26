@@ -1,73 +1,45 @@
+const express = require('express');
 const Telegraf = require('telegraf');
-const express = require('express');
-const expressApp = express();
-
-const API_TOKEN = process.env.TELEGRAM_TOKEN || '';
-const PORT = process.env.PORT || 3000;
-const URL = process.env.APP_URL || 'https://voz-ativa-bot.herokuapp.com';
-
-const bot = new Telegraf(API_TOKEN);
-bot.telegram.setWebhook(`${URL}/bot${API_TOKEN}`);
-expressApp.use(bot.webhookCallback(`/bot${API_TOKEN}`));
-
-bot.command('oldschool', (ctx) => ctx.reply('Hello'))
-bot.command('modern', ({ reply }) => reply('Yo'))
-bot.command('hipster', Telegraf.reply('λ'))
-bot.launch()
-
-// and at the end just start server on PORT
-expressApp.get('/', (req, res) => {
-  res.send('Hello World!');
-});
-
-expressApp.post(`/bot${API_TOKEN}`, (req, res) => {
-  console.log(req);
-});
-
-
-expressApp.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-/*
-const express = require('express');
 const bodyParser = require('body-parser');
-const randomstring = require('randomstring');
-const client = require('./client');
-
-const WEBHOOK_TOKEN = randomstring.generate(16);
-
-client.setWebhook(`https://voz-ativa-bot.herokuapp.com`);
 
 const app = express();
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+var jsonParser = bodyParser.json();
+
+const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN || '';
+const APP_SECRET = process.env.APP_SECRET || 'secret'
+const PORT = process.env.PORT || 3000;
+const URL = process.env.URL || 'https://voz-ativa-bot.herokuapp.com';
+
+const bot = new Telegraf(TELEGRAM_TOKEN);
+bot.telegram.setWebhook(`${URL}/bot${APP_SECRET}`);
+app.use(bot.webhookCallback(`/bot${APP_SECRET}`));
+
+bot.command('status', (ctx) => {
+  ctx.replyWithHTML('<b>Chat ID: </b>' + ctx.chat.id)
+});
+
+bot.on('text', (ctx) => {
+  ctx.replyWithHTML('<b>Received Message: </b>' + ctx.message.text)
+});
 
 app.get('/', (req, res) => {
-  res.status(200).send("ok");
-})
-
-app.post('/', (req, res, next) => {
-  console.log(req.body.message);
-  client.sendMessage(req.body.message.chat.id, 'I\'m a bot, so what?');
+  res.send('This is a simple application to control a Telegram BOT!');
 });
 
-app.use((req, res, next) => {
-	var err = new Error('Not Found');
-	err.status = 404;
-	next(err);
+app.post(`/${APP_SECRET}`, jsonParser, function (req, res) {    
+  const chatID = req.body.chatID;
+
+  bot.telegram.sendMessage(chatID, '<b>This message was send because your POST request!</b>', { parse_mode: 'HTML' })
+    .then(response => {
+      res.status(200).send('Check your chat with the bot.');
+    })
+    .catch(error => {
+      console.log(error); // You can handle this better
+      res.status(400).send('Sorry, something bad happened!');
+    });
 });
 
-// error handlers
-app.use((err, req, res, next) => {
-	res.status(err.status || 500);
-	res.json({
-		message: err.message,
-		error: err
-	});
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
-
-const port = process.env.PORT || 4000;
-app.listen(port, () => console.log(`Servidor rodando na porta ${port}`));
-*/
