@@ -13,8 +13,9 @@
   "author": "Analytics UFCG",
   "license": "GPL-3.0",
   "dependencies": {
-    "express": "^4.16.4",
     "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "pg": "^7.10.0",
     "telegraf": "^3.29.0"
   }
 }

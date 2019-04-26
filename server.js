@@ -2,12 +2,14 @@ const express = require('express');
 const Telegraf = require('telegraf');
 const bodyParser = require('body-parser');
 
+const db = require('./database');
+
 const app = express();
 
 var jsonParser = bodyParser.json();
 
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN || '';
-const APP_SECRET = process.env.APP_SECRET || 'secret'
+const APP_SECRET = process.env.APP_SECRET || 'secret';
 const PORT = process.env.PORT || 3000;
 const URL = process.env.URL || 'https://voz-ativa-bot.herokuapp.com';
 
@@ -15,29 +17,37 @@ const bot = new Telegraf(TELEGRAM_TOKEN);
 bot.telegram.setWebhook(`${URL}/bot${APP_SECRET}`);
 app.use(bot.webhookCallback(`/bot${APP_SECRET}`));
 
-bot.command('status', (ctx) => {
-  ctx.replyWithHTML('<b>Chat ID: </b>' + ctx.chat.id)
+bot.command('status', ctx => {
+  ctx.replyWithHTML('<b>Chat ID: </b>' + ctx.chat.id);
 });
 
-bot.on('text', (ctx) => {
-  ctx.replyWithHTML('<b>Received Message: </b>' + ctx.message.text)
+bot.on('text', ctx => {
+  ctx.replyWithHTML('<b>Received Message: </b>' + ctx.message.text);
 });
 
 app.get('/', (req, res) => {
   res.send('This is a simple application to control a Telegram BOT!');
 });
 
-app.post(`/${APP_SECRET}`, jsonParser, function (req, res) {    
-  const chatID = req.body.chatID;
+app.post(`/${APP_SECRET}`, jsonParser, (req, res) => {
+  const message = req.body.message || 'empty message';
 
-  bot.telegram.sendMessage(chatID, '<b>This message was send because your POST request!</b>', { parse_mode: 'HTML' })
-    .then(response => {
-      res.status(200).send('Check your chat with the bot.');
-    })
-    .catch(error => {
-      console.log(error); // You can handle this better
-      res.status(400).send('Sorry, something bad happened!');
+  db.getAdmins().then(results => {
+    results.forEach(admin => {
+      bot.telegram
+        .sendMessage(admin.chatid, message, { parse_mode: 'HTML' })
+        .then(res => {
+          res.status(200).send('Check your chat with the bot.');
+        })
+        .catch(error => {
+          console.log(error); // You can handle this better
+          res.status(400).send('Sorry, something bad happened!');
+        });
     });
+  })
+  .catch(error => {
+    console.log(error);
+  });
 });
 
 app.listen(PORT, () => {
