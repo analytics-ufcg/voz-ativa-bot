@@ -13,11 +13,23 @@ const getAdmins = () => {
       if (error) {
         reject(error);
       }
-      return resolve(results);
+      resolve(results);
+    })
+  })
+}
+
+const saveLog = (log) => {
+  return new Promise((resolve, reject) => {
+    pool.query('INSERT INTO logs (log) VALUES ($1)', [log], (error, results) => {
+      if (error) {
+        reject(error);
+      }
+      resolve(results);
     })
   })
 }
 
 module.exports = {
-  getAdmins
+  getAdmins,
+  saveLog
 }

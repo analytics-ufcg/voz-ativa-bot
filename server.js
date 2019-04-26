@@ -17,6 +17,9 @@ const bot = new Telegraf(TELEGRAM_TOKEN);
 bot.telegram.setWebhook(`${URL}/bot${APP_SECRET}`);
 app.use(bot.webhookCallback(`/bot${APP_SECRET}`));
 
+/**
+ * Gerenciador de comandos do bot
+ */
 bot.command('status', ctx => {
   ctx.replyWithHTML('<b>Chat ID: </b>' + ctx.chat.id);
 });
@@ -25,8 +28,11 @@ bot.on('text', ctx => {
   ctx.replyWithHTML('<b>Received Message: </b>' + ctx.message.text);
 });
 
+/**
+ * Rotas do servidor web
+ */
 app.get('/', (req, res) => {
-  res.send('This is a simple application to control a Telegram BOT!');
+  res.status(200).send('Voz Ativa!');
 });
 
 app.post(`/${APP_SECRET}`, jsonParser, (req, res) => {
@@ -38,20 +44,27 @@ app.post(`/${APP_SECRET}`, jsonParser, (req, res) => {
       bot.telegram
         .sendMessage(admin.chatid, message, { parse_mode: 'HTML' })
         .then(response => {
-          res.status(200).send('Check your chat with the bot.');
+          db.saveLog(message).then(results => {
+            res.status(200).send('Mensagem enviada!');
+          })
+          .catch(error => {
+            console.log(error);
+            res.status(400).send('Não foi possível salvar o log');
+          })
         })
         .catch(error => {
-          console.log(error); // You can handle this better
-          res.status(400).send('Sorry, something bad happened!');
+          console.log(error);
+          res.status(400).send('Não foi possível enviar a mensagem');
         });
     });
     
   })
   .catch(error => {
     console.log(error);
+    res.status(400).send('Não foi possível encontrar os admins');
   });
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
