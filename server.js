@@ -21,11 +21,11 @@ app.use(bot.webhookCallback(`/bot${APP_SECRET}`));
  * Gerenciador de comandos do bot
  */
 bot.command('status', ctx => {
-  ctx.replyWithHTML('<b>Chat ID: </b>' + ctx.chat.id);
+  ctx.replyWithHTML('<b>Seu chat ID: </b>' + ctx.chat.id);
 });
 
 bot.on('text', ctx => {
-  ctx.replyWithHTML('<b>Received Message: </b>' + ctx.message.text);
+  ctx.replyWithHTML('<b>Recebido: </b>' + ctx.message.text);
 });
 
 /**
@@ -36,8 +36,12 @@ app.get('/', (req, res) => {
 });
 
 app.post(`/${APP_SECRET}`, jsonParser, (req, res) => {
-  const message = req.body.message || 'empty message';
+  const message = req.body.message;
 
+  if (!message) {
+    res.status(200).send('Nenhuma mensagem recebida.');
+    return;
+  }
   db.getAdmins().then(results => {
 
     results.rows.forEach(admin => {
