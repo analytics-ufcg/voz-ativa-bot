@@ -29,27 +29,15 @@ app.get('/', (req, res) => {
   res.send('This is a simple application to control a Telegram BOT!');
 });
 
-app.post(`/${APP_SECRET}`, jsonParser, function (req, res) {    
-  const chatID = req.body.chatID;
-
-  bot.telegram.sendMessage(chatID, '<b>This message was send because your POST request!</b>', { parse_mode: 'HTML' })
-    .then(response => {
-      res.status(200).send('Check your chat with the bot.');
-    })
-    .catch(error => {
-      console.log(error); // You can handle this better
-      res.status(400).send('Sorry, something bad happened!');
-    });
-});
-
-app.post(`/`, jsonParser, (req, res) => {
+app.post(`/${APP_SECRET}`, jsonParser, (req, res) => {
   const message = req.body.message || 'empty message';
 
   db.getAdmins().then(results => {
-    results.forEach(admin => {
+
+    results.rows.forEach(admin => {
       bot.telegram
         .sendMessage(admin.chatid, message, { parse_mode: 'HTML' })
-        .then(res => {
+        .then(response => {
           res.status(200).send('Check your chat with the bot.');
         })
         .catch(error => {
@@ -57,6 +45,7 @@ app.post(`/`, jsonParser, (req, res) => {
           res.status(400).send('Sorry, something bad happened!');
         });
     });
+    
   })
   .catch(error => {
     console.log(error);
