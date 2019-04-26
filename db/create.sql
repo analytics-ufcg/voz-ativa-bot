@@ -6,6 +6,6 @@ PRIMARY KEY ("id"));
 
 CREATE TABLE IF NOT EXISTS "logs" (
     "id" SERIAL, 
-    "timestamp" TIMESTAMP,
+    "timestamp" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     "log" TEXT,
 PRIMARY KEY ("id"));
