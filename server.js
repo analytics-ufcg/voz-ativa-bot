@@ -42,31 +42,35 @@ app.post(`/${APP_SECRET}`, jsonParser, (req, res) => {
     res.status(200).send('Nenhuma mensagem recebida.');
     return;
   }
+
+  // Envia mensagens para os admins
   db.getAdmins().then(results => {
 
     results.rows.forEach(admin => {
       bot.telegram
         .sendMessage(admin.chatid, message, { parse_mode: 'HTML' })
         .then(response => {
-          db.saveLog(message).then(results => {
-            res.status(200).send('Mensagem enviada!');
-          })
-          .catch(error => {
-            console.log(error);
-            res.status(400).send('Não foi possível salvar o log');
-          })
+          res.status(200).send('Mensagem enviada!');
         })
         .catch(error => {
           console.log(error);
           res.status(400).send('Não foi possível enviar a mensagem');
         });
     });
-    
   })
   .catch(error => {
     console.log(error);
     res.status(400).send('Não foi possível encontrar os admins');
   });
+
+  // Salva mensagem no log
+  db.saveLog(message).then(results => {
+    console.log('Log salvo com sucesso');
+  })
+  .catch(error => {
+    console.log(error);
+    res.status(400).send('Não foi possível salvar o log');
+  })
 });
 
 app.listen(PORT, () => {
