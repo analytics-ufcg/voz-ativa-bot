@@ -5,7 +5,7 @@ const pool = new Pool({
   database: process.env.DATABASE_NAME || 'vozativabot',
   password: process.env.DATABASE_PASSWORD || 'secret',
   port: 5432,
-  ssl: true
+  ssh: true
 })
 
 const getAdmins = () => {
