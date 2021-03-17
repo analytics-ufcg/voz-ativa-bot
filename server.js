@@ -32,10 +32,12 @@ bot.on('text', ctx => {
  * Rotas do servidor web
  */
 app.get('/', (req, res) => {
+  console.log("Alguém está me testando...");
   res.status(200).send('Voz Ativa!');
 });
 
 app.post(`/${APP_SECRET}`, jsonParser, (req, res) => {
+  console.log("Recebendo mensagem...");
   const message = req.body.message;
 
   if (!message) {

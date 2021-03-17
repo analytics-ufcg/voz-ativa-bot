@@ -8,6 +8,7 @@ const pool = new Pool({
 })
 
 const getAdmins = () => {
+  console.log("Consultando admins...");
   return new Promise((resolve, reject) => {
     pool.query('SELECT * FROM admins', (error, results) => {
       if (error) {
@@ -19,6 +20,7 @@ const getAdmins = () => {
 }
 
 const saveLog = (log) => {
+  console.log("Salvando log...");
   return new Promise((resolve, reject) => {
     pool.query('INSERT INTO logs (log) VALUES ($1)', [log], (error, results) => {
       if (error) {
