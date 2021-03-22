@@ -1,3 +1,5 @@
+require('dotenv').config({ path: ".env" });
+
 const express = require('express');
 const Telegraf = require('telegraf');
 const bodyParser = require('body-parser');
