@@ -16,7 +16,7 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
-    "pg": "^7.10.0",
+    "pg": "^8.0.3",
     "telegraf": "^3.29.0"
   }
 }
