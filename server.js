@@ -63,14 +63,14 @@ app.post(`/${APP_SECRET}`, jsonParser, (req, res) => {
     res.status(400).send('Não foi possível encontrar os admins');
   });
 
-  // Salva mensagem no log
-  db.saveLog(message).then(results => {
-    console.log('Log salvo com sucesso');
-  })
-  .catch(error => {
-    console.log(error);
-    res.status(400).send('Não foi possível salvar o log');
-  })
+  // // Salva mensagem no log
+  // db.saveLog(message).then(results => {
+  //   console.log('Log salvo com sucesso');
+  // })
+  // .catch(error => {
+  //   console.log(error);
+  //   res.status(400).send('Não foi possível salvar o log');
+  // })
 });
 
 app.listen(PORT, () => {
