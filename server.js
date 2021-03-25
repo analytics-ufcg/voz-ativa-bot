@@ -3,6 +3,7 @@ const Telegraf = require('telegraf');
 const bodyParser = require('body-parser');
 
 const db = require('./database');
+const data = require('./data');
 
 const app = express();
 
@@ -42,35 +43,27 @@ app.post(`/${APP_SECRET}`, jsonParser, (req, res) => {
     res.status(200).send('Nenhuma mensagem recebida.');
     return;
   }
-
   // Envia mensagens para os admins
-  db.getAdmins().then(results => {
+  const admins = data.getAdmins();
+  admins.forEach((admin) => {
+    bot.telegram.sendMessage(admin, message, { parse_mode: 'HTML' })
+      .then(text => {
+        console.log('Mensagem enviada para ' + admin);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  });
 
-    results.rows.forEach(admin => {
-      bot.telegram
-        .sendMessage(admin.chatid, message, { parse_mode: 'HTML' })
-        .then(response => {
-          res.status(200).send('Mensagem enviada!');
-        })
-        .catch(error => {
-          console.log(error);
-          res.status(400).send('Não foi possível enviar a mensagem');
-        });
-    });
+  // Salva mensagem no log
+  db.saveLog(message).then(results => {
+    console.log('Log salvo com sucesso');
   })
   .catch(error => {
     console.log(error);
-    res.status(400).send('Não foi possível encontrar os admins');
   });
 
-  // // Salva mensagem no log
-  // db.saveLog(message).then(results => {
-  //   console.log('Log salvo com sucesso');
-  // })
-  // .catch(error => {
-  //   console.log(error);
-  //   res.status(400).send('Não foi possível salvar o log');
-  // })
+  res.status(200).send('Mensagem enviada para ' + admins.length + ' admins');
 });
 
 app.listen(PORT, () => {
