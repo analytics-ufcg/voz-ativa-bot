@@ -1,26 +1,27 @@
-const { Client } = require('pg')
+const { Pool } = require('pg')
 
-const client = new Client({
-  user: process.env.DATABASE_USER || 'postgres',
+const pool = new Pool({
   host: process.env.DATABASE_HOST || 'localhost',
+  user: process.env.DATABASE_USER || 'postgres',
   database: process.env.DATABASE_NAME || 'vozativabot',
   password: process.env.DATABASE_PASSWORD || 'secret',
-  port: 5432,
-  ssl: { rejectUnauthorized: false }
+  max: 20,
+  idleTimeoutMillis: 0,
+  connectionTimeoutMillis: 2000,
+  ssl: true
 });
 
 const getAdmins = () => {
   return new Promise((resolve, reject) => {
-    client.connect(err => {
-      if (err) {
-        reject(err);
+    pool.connect((error, client, release) => {
+      if (error) {
+        reject(error);
       } else {
         client.query('SELECT * FROM admins', (error, results) => {
+          release();
           if (error) {
-            client.end()
-            reject(error);
+            reject(error.stack);
           } else {
-            client.end()
             resolve(results);
           }
         })
@@ -31,16 +32,15 @@ const getAdmins = () => {
 
 const saveLog = (log) => {
   return new Promise((resolve, reject) => {
-    client.connect(err => {
-      if (err) {
-        reject("Erro na conexão com o bd");
+    pool.connect((error, client, release) => {
+      if (error) {
+        reject(error);
       } else {
         client.query('INSERT INTO logs (log) VALUES ($1)', [log], (error, results) => {
+          release();
           if (error) {
-            client.end()
             reject(error);
           }
-          client.end()
           resolve(results);
         })
       }
