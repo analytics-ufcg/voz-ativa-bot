@@ -1,0 +1,11 @@
+version: '3.5'
+
+services:
+  bot:
+    build: .
+    env_file:
+      - .env
+    volumes:
+    - ./server.js:/app/server.js
+    ports:
+      - "3000:3000"

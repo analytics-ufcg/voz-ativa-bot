@@ -1,30 +1,49 @@
-const Pool = require('pg').Pool
+const { Pool } = require('pg')
+
 const pool = new Pool({
-  user: process.env.DATABASE_USER || 'postgres',
   host: process.env.DATABASE_HOST || 'localhost',
+  user: process.env.DATABASE_USER || 'postgres',
   database: process.env.DATABASE_NAME || 'vozativabot',
   password: process.env.DATABASE_PASSWORD || 'secret',
-  port: 5432
-})
+  max: 20,
+  idleTimeoutMillis: 0,
+  connectionTimeoutMillis: 2000,
+  ssl: true
+});
 
 const getAdmins = () => {
   return new Promise((resolve, reject) => {
-    pool.query('SELECT * FROM admins', (error, results) => {
+    pool.connect((error, client, release) => {
       if (error) {
         reject(error);
+      } else {
+        client.query('SELECT * FROM admins', (error, results) => {
+          release();
+          if (error) {
+            reject(error.stack);
+          } else {
+            resolve(results);
+          }
+        })
       }
-      resolve(results);
     })
   })
 }
 
 const saveLog = (log) => {
   return new Promise((resolve, reject) => {
-    pool.query('INSERT INTO logs (log) VALUES ($1)', [log], (error, results) => {
+    pool.connect((error, client, release) => {
       if (error) {
         reject(error);
+      } else {
+        client.query('INSERT INTO logs (log) VALUES ($1)', [log], (error, results) => {
+          release();
+          if (error) {
+            reject(error);
+          }
+          resolve(results);
+        })
       }
-      resolve(results);
     })
   })
 }
